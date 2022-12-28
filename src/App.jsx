@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Card from './components/Card';
+import Scoreboard from './components/Scoreboard';
 import { v4 as uuidv4 } from 'uuid';
 
 function App() {
@@ -70,12 +71,8 @@ function App() {
   return (
     <AppStyled className='App'>
       <h1>Memory Game</h1>
-      <ScoreBoard>
-        <p>Tries: {tries}</p>
-        <p>Best:</p>
-      </ScoreBoard>
+      <Scoreboard tries={tries} />
       <button onClick={shuffleCards}>New Game</button>
-
       <Board>
         {cards.map((card) => (
           <Card
@@ -103,15 +100,9 @@ const AppStyled = styled.div`
   }
 `;
 const Board = styled.div`
-  padding: 32px;
   display: grid;
   grid-template-columns: repeat(4, minmax(150px, 200px));
   gap: 20px;
 `;
 
-const ScoreBoard = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 32px;
-`;
 export default App;
