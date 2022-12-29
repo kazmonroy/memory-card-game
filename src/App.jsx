@@ -7,7 +7,8 @@ import Confetti from 'react-confetti';
 
 function App() {
   const [characters, setCharacters] = useState(() => []);
-  const [tries, setTries] = useState(() => 0);
+  const [tries, setTries] = useState(0);
+  const [bestTries, setBestTries] = useState([]);
   const [choiceOne, setChoiceOne] = useState(() => null);
   const [choiceTwo, setChoiceTwo] = useState(() => null);
   const [disabled, setDisabled] = useState(() => false);
@@ -26,6 +27,7 @@ function App() {
           .sort(() => Math.random() - 0.5)
       );
       setWin(false);
+      setBestTries([]);
     })();
   }, []);
 
@@ -51,8 +53,20 @@ function App() {
   }, [choiceOne, choiceTwo]);
 
   useEffect(() => {
-    const allMatch = characters.every((character) => character.matched);
-    allMatch ? setWin(true) : '';
+    const allMatch = characters.every(
+      (character) => character.matched === true
+    );
+    if (allMatch) {
+      setWin(true);
+
+      setBestTries((prevTries) =>
+        [...prevTries, tries].sort((newBest, prevBest) =>
+          newBest > prevBest ? 1 : -1
+        )
+      );
+    } else {
+      return;
+    }
   }, [characters]);
 
   const resetChoices = () => {
@@ -78,6 +92,7 @@ function App() {
     } else {
       setWin(false);
       shuffleNewCards();
+      setTries(0);
     }
   };
 
@@ -89,7 +104,7 @@ function App() {
     <AppStyled className='App'>
       {win && <Confetti />}
       <h1>Memory Game</h1>
-      <Scoreboard tries={tries} />
+      <Scoreboard tries={tries} bestTries={bestTries} />
       <button onClick={startGame}>New Game</button>
       <Board>
         {characters.map((card) => (

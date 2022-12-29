@@ -1,9 +1,9 @@
 import styled from 'styled-components';
-const Scoreboard = ({ tries }) => {
+const Scoreboard = ({ tries, bestTries }) => {
   return (
     <ScoreBoard>
       <p>Tries: {tries}</p>
-      <p>Best:</p>
+      <p>Best: {bestTries[0]}</p>
     </ScoreBoard>
   );
 };
