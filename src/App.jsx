@@ -3,14 +3,16 @@ import styled from 'styled-components';
 import Card from './components/Card';
 import Scoreboard from './components/Scoreboard';
 import { v4 as uuidv4 } from 'uuid';
+import Confetti from 'react-confetti';
 
 function App() {
-  const [characters, setCharacters] = useState([]);
-  const [cards, setCards] = useState([]);
-  const [tries, setTries] = useState(0);
-  const [choiceOne, setChoiceOne] = useState(null);
-  const [choiceTwo, setChoiceTwo] = useState(null);
-  const [disabled, setDisabled] = useState(false);
+  const [characters, setCharacters] = useState(() => []);
+  const [cards, setCards] = useState(() => []);
+  const [tries, setTries] = useState(() => 0);
+  const [choiceOne, setChoiceOne] = useState(() => null);
+  const [choiceTwo, setChoiceTwo] = useState(() => null);
+  const [disabled, setDisabled] = useState(() => false);
+  const [win, setWin] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -50,14 +52,22 @@ function App() {
   };
 
   const shuffleCards = () => {
-    const shuffledCards = [...characters, ...characters]
-      .map((character) => ({ ...character, matched: false }))
-      .sort(() => Math.random() - 0.5);
+    if (!win) {
+      const shuffledCards = [...characters, ...characters]
+        .map((character) => ({ ...character, matched: false }))
+        .sort(() => Math.random() - 0.5);
 
-    setChoiceOne(null);
-    setChoiceTwo(null);
-    setTries(0);
-    setCards(shuffledCards);
+      setChoiceOne(null);
+      setChoiceTwo(null);
+      setTries(0);
+      setCards(shuffledCards);
+    } else {
+      setWin(false);
+      const shuffledCards = [...characters, ...characters]
+        .map((character) => ({ ...character, matched: false }))
+        .sort(() => Math.random() - 0.5);
+      setCards(shuffledCards);
+    }
   };
 
   const chooseCard = (card) => {
@@ -65,11 +75,17 @@ function App() {
   };
 
   useEffect(() => {
-    shuffleCards();
-  }, [0]);
+    const allMatched = cards.every((card) => card.matched);
+    console.log(allMatched);
+
+    if (allMatched) {
+      setWin(true);
+    }
+  }, [cards]);
 
   return (
     <AppStyled className='App'>
+      {win && <Confetti />}
       <h1>Memory Game</h1>
       <Scoreboard tries={tries} />
       <button onClick={shuffleCards}>New Game</button>
