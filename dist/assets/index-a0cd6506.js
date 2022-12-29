@@ -65,6 +65,7 @@ Error generating stack: `+i.message+`
     width: 100%;
     height: auto;
     border-radius: 8px;
+    box-shadow: rgba(120, 119, 119, 0.9) 0px 2px 2px 0px;
   }
 `,Bm=Wr.div`
   .front {
