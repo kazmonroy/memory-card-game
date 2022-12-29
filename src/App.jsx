@@ -7,7 +7,6 @@ import Confetti from 'react-confetti';
 
 function App() {
   const [characters, setCharacters] = useState(() => []);
-  const [cards, setCards] = useState(() => []);
   const [tries, setTries] = useState(() => 0);
   const [choiceOne, setChoiceOne] = useState(() => null);
   const [choiceTwo, setChoiceTwo] = useState(() => null);
@@ -21,13 +20,20 @@ function App() {
       const results = response.results;
       const characters = results.slice(0, 4);
 
-      setCharacters([...characters, ...characters]);
+      setCharacters(
+        [...characters, ...characters]
+          .map((character) => ({ ...character, matched: false }))
+          .sort(() => Math.random() - 0.5)
+      );
+      setWin(false);
     })();
+  }, []);
 
+  useEffect(() => {
     if (choiceOne && choiceTwo) {
       setDisabled(true);
       if (choiceOne.id === choiceTwo.id) {
-        setCards((prevCards) => {
+        setCharacters((prevCards) => {
           return prevCards.map((card) => {
             if (card.id === choiceOne.id) {
               return { ...card, matched: true };
@@ -44,6 +50,11 @@ function App() {
     }
   }, [choiceOne, choiceTwo]);
 
+  useEffect(() => {
+    const allMatch = characters.every((character) => character.matched);
+    allMatch ? setWin(true) : '';
+  }, [characters]);
+
   const resetChoices = () => {
     setChoiceOne(null);
     setChoiceTwo(null);
@@ -51,22 +62,22 @@ function App() {
     setDisabled(false);
   };
 
-  const shuffleCards = () => {
-    if (!win) {
-      const shuffledCards = characters
-        .map((character) => ({ ...character, matched: false }))
-        .sort(() => Math.random() - 0.5);
+  const shuffleNewCards = () => {
+    const shuffledCards = characters
+      .map((character) => ({ ...character, matched: false }))
+      .sort(() => Math.random() - 0.5);
+    setCharacters(shuffledCards);
+  };
 
+  const startGame = () => {
+    if (!win) {
+      shuffleNewCards();
       setChoiceOne(null);
       setChoiceTwo(null);
       setTries(0);
-      setCards(shuffledCards);
     } else {
       setWin(false);
-      const shuffledCards = characters
-        .map((character) => ({ ...character, matched: false }))
-        .sort(() => Math.random() - 0.5);
-      setCards(shuffledCards);
+      shuffleNewCards();
     }
   };
 
@@ -74,29 +85,20 @@ function App() {
     choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
   };
 
-  useEffect(() => {
-    const allMatched = cards.every((card) => card.matched);
-    console.log(allMatched);
-
-    if (allMatched) {
-      setWin(true);
-    }
-  }, [cards]);
-
   return (
     <AppStyled className='App'>
       {win && <Confetti />}
       <h1>Memory Game</h1>
       <Scoreboard tries={tries} />
-      <button onClick={shuffleCards}>New Game</button>
+      <button onClick={startGame}>New Game</button>
       <Board>
-        {cards.map((card) => (
+        {characters.map((card) => (
           <Card
             key={uuidv4()}
             img={card.image}
             chooseCard={() => chooseCard(card)}
-            flipped={card === choiceOne || card === choiceTwo || card.matched}
             disabled={disabled}
+            flipped={card === choiceOne || card === choiceTwo || card.matched}
           />
         ))}
       </Board>

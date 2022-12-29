@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-const Card = ({ img, chooseCard, flipped, disabled }) => {
+const Card = ({ img, chooseCard, disabled, flipped }) => {
   const handleClick = () => {
     if (!disabled) {
       chooseCard();
@@ -36,12 +36,12 @@ const CardStyled = styled.div`
 const CardsContainer = styled.div`
   .front {
     position: absolute;
-    transition: all 3s ease-in;
+    transition: all 0.2s ease-in;
     transform: rotateY(${(props) => (props.flipped ? '0deg' : '90deg')});
   }
 
   .cover {
-    transition: all 3s ease-in;
+    transition: all 0.2s ease-in;
     transform: rotateY(${(props) => (props.flipped ? '90deg' : '0deg')});
   }
 `;
