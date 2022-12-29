@@ -21,7 +21,7 @@ function App() {
       const results = response.results;
       const characters = results.slice(0, 4);
 
-      setCharacters(characters);
+      setCharacters([...characters, ...characters]);
     })();
 
     if (choiceOne && choiceTwo) {
@@ -53,7 +53,7 @@ function App() {
 
   const shuffleCards = () => {
     if (!win) {
-      const shuffledCards = [...characters, ...characters]
+      const shuffledCards = characters
         .map((character) => ({ ...character, matched: false }))
         .sort(() => Math.random() - 0.5);
 
@@ -63,7 +63,7 @@ function App() {
       setCards(shuffledCards);
     } else {
       setWin(false);
-      const shuffledCards = [...characters, ...characters]
+      const shuffledCards = characters
         .map((character) => ({ ...character, matched: false }))
         .sort(() => Math.random() - 0.5);
       setCards(shuffledCards);
